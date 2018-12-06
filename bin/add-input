@@ -1,6 +1,6 @@
 #! /bin/bash
 
-self=$(dirname $0)
+self=$(cd $(dirname $0); pwd)
 dst=${self%/bin}
 
 src="$1"
