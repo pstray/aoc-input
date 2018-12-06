@@ -1,0 +1,30 @@
+#! /bin/bash
+
+self=$(dirname $0)
+dst=${self%/bin}
+
+src="$1"
+[ -z "$src" ] && src="input"
+
+if [ ! -f "$src" ]; then
+    echo "No such file $src" >&2
+    exit 1
+fi
+
+sha1=$(sha1sum "$src" | cut -c1-40)
+
+cd $(dirname "$src")
+dir=$(pwd)
+src=$dir/$(basename "$src")
+
+day=$(printf "%02d" $(basename $(pwd)))
+cd ..
+year=$(printf "%04d" $(basename $(pwd)))
+
+dst_dir="$dst/$year/$day"
+dst_file="$dst_dir/input-$sha1"
+
+[ -f "$dst_file" ] && exit
+
+mkdir -p "$dst_dir"
+cp -va "$src" "$dst_file"
