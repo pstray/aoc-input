@@ -17,9 +17,9 @@ cd $(dirname "$src")
 dir=$(pwd)
 src=$dir/$(basename "$src")
 
-day=$(printf "%02d" $(basename $(pwd)))
+day=$(printf "%02d" $[10#"$(basename $(pwd))"])
 cd ..
-year=$(printf "%04d" $(basename $(pwd)))
+year=$(printf "%04d" $[10#"$(basename $(pwd))"])
 
 dst_dir="$git_dir/$year/$day"
 dst_file="$dst_dir/input-$sha1"
@@ -32,7 +32,7 @@ cp -va "$src" "$dst_file"
 cd "$git_dir" || exit
 
 file="$year/$day/input-$sha1"
+git rebase
 git add "$file"
 git commit -m "Added $file" "$file"
-git rebase
 git push
