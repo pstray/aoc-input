@@ -3,36 +3,39 @@
 self=$(cd $(dirname $0); pwd)
 git_dir=${self%/bin}
 
-src="$1"
-[ -z "$src" ] && src="input"
+(cd "$git_dir" && git rebase)
 
-if [ ! -f "$src" ]; then
-    echo "No such file $src" >&2
-    exit 1
-fi
+[ -z "$1" ] && set input
 
-sha1=$(sha1sum "$src" | cut -c1-40)
+for src in "$@"; do 
+    if [ ! -f "$src" ]; then
+	echo "No such file $src" >&2
+	continue
+    fi
 
-cd $(dirname "$src")
-dir=$(pwd)
-src=$dir/$(basename "$src")
+    sha1=$(sha1sum "$src" | cut -c1-40)
 
-day=$(printf "%02d" $[10#"$(basename $(pwd))"])
-cd ..
-year=$(printf "%04d" $[10#"$(basename $(pwd))"])
+    dir=$(cd $(dirname "$src"); pwd)
+    src=$dir/$(basename "$src")
 
-dst_dir="$git_dir/$year/$day"
-dst_file="$dst_dir/input-$sha1"
+    day=$(printf "%02d" $[10#"$(basename $dir)"])
+    year=$(printf "%04d" $[10#"$(basename $(dirname "$dir"))"])
 
-if [ ! -f "$dst_file" ]; then
-    mkdir -p "$dst_dir"
-    cp -va "$src" "$dst_file"
-fi
+    dst_dir="$git_dir/$year/$day"
+    dst_file="$dst_dir/input-$sha1"
 
-cd "$git_dir" || exit
+    if [ ! -f "$dst_file" ]; then
+	mkdir -p "$dst_dir"
+	cp -va "$src" "$dst_file"
+    fi
 
-file="$year/$day/input-$sha1"
-git rebase
-git add "$file"
-git commit -m "Added $file" "$file"
-git push
+    (
+	file="$year/$day/input-$sha1"
+	cd "$git_dir" && (
+	    git add "$file"
+	    git commit -m "Added $file" "$file"
+	)
+    )
+done
+
+cd "$git_dir" && git push
