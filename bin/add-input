@@ -24,10 +24,10 @@ year=$(printf "%04d" $[10#"$(basename $(pwd))"])
 dst_dir="$git_dir/$year/$day"
 dst_file="$dst_dir/input-$sha1"
 
-[ -f "$dst_file" ] && exit
-
-mkdir -p "$dst_dir"
-cp -va "$src" "$dst_file"
+if [ ! -f "$dst_file" ]; then
+    mkdir -p "$dst_dir"
+    cp -va "$src" "$dst_file"
+fi
 
 cd "$git_dir" || exit
 
