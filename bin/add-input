@@ -32,7 +32,7 @@ cp -va "$src" "$dst_file"
 cd "$git_dir" || exit
 
 file="$year/$day/input-$sha1"
-git rebase
 git add "$file"
 git commit -m "Added $file" "$file"
+git rebase
 git push
