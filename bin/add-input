@@ -1,7 +1,7 @@
 #! /bin/bash
 
 self=$(cd $(dirname $0); pwd)
-dst=${self%/bin}
+git_dir=${self%/bin}
 
 src="$1"
 [ -z "$src" ] && src="input"
@@ -21,10 +21,18 @@ day=$(printf "%02d" $(basename $(pwd)))
 cd ..
 year=$(printf "%04d" $(basename $(pwd)))
 
-dst_dir="$dst/$year/$day"
+dst_dir="$git_dir/$year/$day"
 dst_file="$dst_dir/input-$sha1"
 
 [ -f "$dst_file" ] && exit
 
 mkdir -p "$dst_dir"
 cp -va "$src" "$dst_file"
+
+cd "$git_dir" || exit
+
+file="$year/$day/input-$sha1"
+git rebase
+git add "$file"
+git commit -m "Added $file" "$file"
+git push
