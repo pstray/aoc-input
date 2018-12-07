@@ -3,7 +3,7 @@
 self=$(cd $(dirname $0); pwd)
 git_dir=${self%/bin}
 
-(cd "$git_dir" && git rebase)
+(cd "$git_dir" && git fetch && git rebase)
 
 [ -z "$1" ] && set input
 
