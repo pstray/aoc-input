@@ -16,13 +16,26 @@ for src in "$@"; do
     sha1=$(sha1sum "$src" | cut -c1-40)
 
     dir=$(cd $(dirname "$src"); pwd)
-    src=$dir/$(basename "$src")
+    base=$(basename "$src")
+    src=$dir/$base
+
+    case $base in
+	sample*)
+	    base=sample
+	    ;;
+	input*)
+	    base=input
+	    ;;
+	*)
+	    base=data
+	    ;;
+    esac
 
     day=$(printf "%02d" $[10#"$(basename "$dir")"])
     year=$(printf "%04d" $[10#"$(basename $(dirname "$dir"))"])
 
     dst_dir="$git_dir/$year/$day"
-    dst_file="$dst_dir/input-$sha1"
+    dst_file="$dst_dir/$base-$sha1"
 
     if [ ! -f "$dst_file" ]; then
 	mkdir -p "$dst_dir"
@@ -30,11 +43,11 @@ for src in "$@"; do
     fi
 
     (
-	file="$year/$day/input-$sha1"
-	cd "$git_dir" && (
-	    git add "$file"
-	    git commit -m "Added $file" "$file"
-	)
+     	file="$year/$day/$base-$sha1"
+     	cd "$git_dir" && (
+     	    git add "$file"
+     	    git commit -m "Added $file" "$file"
+     	)
     )
 done
 
