@@ -7,9 +7,14 @@ git_dir=${self%/bin}
 
 [ -z "$1" ] && set input
 
-for src in "$@"; do 
+for src in "$@"; do
     if [ ! -f "$src" ]; then
 	echo "No such file $src" >&2
+	continue
+    fi
+
+    if [ -L "$src" ]; then
+	echo "Skipping symlink" >&2
 	continue
     fi
 
